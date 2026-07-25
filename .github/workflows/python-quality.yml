@@ -22,7 +22,8 @@ on:
         default: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          pip install -e . pytest
+          if [ -f setup.py ] || [ -f pyproject.toml ]; then pip install -e .; fi
+          pip install pytest
       run-tests:
         description: "Whether to run pytest (set false for repos without tests yet)."
         type: boolean
