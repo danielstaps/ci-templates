@@ -1,0 +1,52 @@
+name: Python Quality
+
+# Reusable workflow: lint + format check (ruff) and run the test suite.
+# Call it from any repo with a tiny caller workflow, e.g.:
+#
+#   jobs:
+#     quality:
+#       uses: danielstaps/ci-templates/.github/workflows/python-quality.yml@main
+#       with:
+#         python-version: "3.11"
+
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        description: "Python version to test against."
+        type: string
+        default: "3.11"
+      install:
+        description: "Command to install the package + test/runtime deps."
+        type: string
+        default: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install -e . pytest
+      run-tests:
+        description: "Whether to run pytest (set false for repos without tests yet)."
+        type: boolean
+        default: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+
+      - name: Ruff lint + format check
+        run: |
+          pip install ruff
+          ruff check .
+          ruff format --check .
+
+      - name: Install package
+        run: ${{ inputs.install }}
+
+      - name: Tests
+        if: ${{ inputs.run-tests }}
+        run: pytest -q
