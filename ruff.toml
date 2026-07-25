@@ -21,8 +21,11 @@ extend-exclude = [
 # UP: pyupgrade (modernize syntax), B: flake8-bugbear (likely bugs).
 select = ["E", "W", "F", "I", "UP", "B"]
 ignore = [
-    "E501",  # line length is handled by the formatter
-    "B008",  # function call in argument defaults (common in research code)
+    "E501",   # line length is handled by the formatter
+    "B008",   # function call in argument defaults (common in research code)
+    "UP031",  # %-formatting is fine; mass f-string rewrite risks subtle breakage
+    "B007",   # unused loop variable (harmless in research/plotting loops)
+    "E741",   # ambiguous variable names (l, I, ...) used a lot in the maths
 ]
 
 [lint.per-file-ignores]
